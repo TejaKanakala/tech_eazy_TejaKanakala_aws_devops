@@ -10,10 +10,9 @@ This project automates EC2 instance provisioning, deployment, and teardown using
 - ✅ AWS CLI configured (`aws configure`)
 - ✅ SSH key pair (`.pem` file) created and stored locally
 - ✅ IAM Roles:
-  - `DemoRoleForEC2` (or custom) with:
     - S3 upload access (logs)
-    - S3 read access (for validation role)
-- ✅ S3 bucket created (for Assignment 2 & 3)
-- ✅ GitHub repo with deployment script (for Assignment 3)
+    - S3 read access 
+- ✅ S3 bucket created 
+- ✅ GitHub repo with deployment script 
 
 
