@@ -1,0 +1,5 @@
+aws_region          = "ap-south-1"
+instance_type       = "t2.micro"
+key_name            = "techeazy-key"
+security_group_id   = "sg-0cb224bb477062dd3"
+iam_instance_profile = "S3UploadOnlyRole"
