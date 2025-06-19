@@ -1,4 +1,4 @@
-name: Deploy Spring App
+name: Deploy EC2 and Spring Boot App
 
 on:
   push:
@@ -6,45 +6,6 @@ on:
     tags:
       - deploy-dev
       - deploy-prod
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/techeazy-key.pem
-        chmod 400 ~/.ssh/techeazy-key.pem
-
-    - name: Deploy Spring Boot App to EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/techeazy-key.pem ubuntu@<EC2_PUBLIC_DNS> << EOF
-          cd /home/ubuntu
-          java -jar demo-0.0.1-SNAPSHOT.jar &
-        EOF
-
-    - name: Health Check
-      run: |
-        curl -f http://ec2-3-7-252-214.ap-south-1.compute.amazonaws.com:80 || exit 1
-
-
-
-
-
-
-name: Deploy EC2 Dev Environment
-
-on:
-  push:
-    branches:
-      - main
-    tags:
-      - deploy-dev
 
 jobs:
   deploy:
@@ -72,3 +33,19 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./infra
 
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/techeazy-key.pem
+          chmod 400 ~/.ssh/techeazy-key.pem
+
+      - name: Deploy Spring Boot App to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/techeazy-key.pem ubuntu@ec2-3-7-252-214.ap-south-1.compute.amazonaws.com << EOF
+            cd /home/ubuntu
+            nohup java -jar demo-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+          EOF
+
+      - name: Health Check
+        run: |
+          curl -f http://ec2-3-7-252-214.ap-south-1.compute.amazonaws.com:80 || exit 1
