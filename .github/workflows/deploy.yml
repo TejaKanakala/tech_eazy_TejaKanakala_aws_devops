@@ -37,7 +37,7 @@ jobs:
 
 
 
-        name: Deploy EC2 Dev Environment
+name: Deploy EC2 Dev Environment
 
 on:
   push:
