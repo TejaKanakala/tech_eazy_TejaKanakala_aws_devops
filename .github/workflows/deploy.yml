@@ -1,0 +1,59 @@
+name: Deploy EC2 and Spring Boot App
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - deploy-dev
+      - deploy-prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infra
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./infra
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/techeazy-key.pem
+          chmod 400 ~/.ssh/techeazy-key.pem
+
+      - name: Deploy Spring Boot App to EC2
+        run: |
+          ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/techeazy-key.pem ec2-user@ec2-3-110-189-158.ap-south-1.compute.amazonaws.com << EOF
+            cd /home/ec2-user
+            nohup java -jar techeazy-devops-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+          EOF
+          ssh -tt -o StrictHostKeyChecking=no -i ~/.ssh/techeazy-key.pem ec2-user@ec2-3-110-189-158.ap-south-1.compute.amazonaws.com << EOF
+            chmod +x setup.sh
+            ./setup.sh
+          EOF
+
+      - name: Verify logs uploaded to S3
+        run: |
+          aws s3 ls s3://techeazy-logs-unique/
+
+      - name: Health Check
+        run: |
+          curl -f http://ec2-3-110-189-158.ap-south-1.compute.amazonaws.com || exit 1
