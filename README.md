@@ -3,6 +3,8 @@ Prerequisite
   2	One s3 bucket already created to use it to store terraform.tfstate file.
 
 Project Overview
+
+
   This project demonstrates the deployment of an application to an AWS EC2 instance using Terraform and GitHub Actions.
 
 Directory Structure
@@ -11,6 +13,8 @@ Directory Structure
 
 How to Use
  1.	Any commit on terraform file will trigger the workflow to create infrastructure on terraform workflow:
+
+    
   o	creates infrastructure:- ec2,s3, security group, iam instance profile,iam role,iam policy.
   o	the terraform state file will be located at the s3 bucket we already created, you have to mention it on backend.tf
   o	the script will deploy the application on ec2, application will be accesssible via port 80.
@@ -18,11 +22,15 @@ How to Use
   o	now application is running you can see it's public_ip in output and access the application.
   o	to save cost the ec2 instance will be stopped after 10 mins as we specify in terraform.tfvars
 
- 2.	Destroy the infrastructure
+ 3.	Destroy the infrastructure
+
+    
   o	to destroy the infrastructure we have to commit on "github/workflows/destroy.yml" file.
   o	it will trigger the workflow to destroy the infrastructure.
 
 Workflow Details
+
+
  The GitHub Actions workflow is defined in .github/workflows/deploy.yml. It performs the following steps:
   1.	Checkout code: Checks out the code in the repository.
   2.	Configure AWS credentials: Configures AWS credentials using secrets stored in the repository.
