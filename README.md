@@ -1,13 +1,13 @@
 Prerequisite
-  •	Aws access_key_id and secret access_key_id configured in github secrets.
-  •	One s3 bucket already created to use it to store terraform.tfstate file.
+  1	Aws access_key_id and secret access_key_id configured in github secrets.
+  2	One s3 bucket already created to use it to store terraform.tfstate file.
 
 Project Overview
   This project demonstrates the deployment of an application to an AWS EC2 instance using Terraform and GitHub Actions.
 
 Directory Structure
-  •	terraform/: Contains Terraform configuration files for deploying to EC2
-  •	.github/workflows/: Contains GitHub Actions workflow files for automating deployment
+  1	terraform/: Contains Terraform configuration files for deploying to EC2
+  2	.github/workflows/: Contains GitHub Actions workflow files for automating deployment
 
 How to Use
  1.	Any commit on terraform file will trigger the workflow to create infrastructure on terraform workflow:
